@@ -1,7 +1,8 @@
 {
   "root": true,
   "project": {
-    "name": "blueBirdBarter"
+    "name": "blueBirdBarter",
+    "basePath": "/dist"
   },
   "api": {
     "projectId": "9rty98wh",
