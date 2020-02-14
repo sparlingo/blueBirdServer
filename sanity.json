@@ -2,7 +2,7 @@
   "root": true,
   "project": {
     "name": "blueBirdBarter",
-    "basePath": "/dist"
+    "basePath": "/"
   },
   "api": {
     "projectId": "9rty98wh",
@@ -14,8 +14,7 @@
     "@sanity/default-layout",
     "@sanity/default-login",
     "@sanity/desk-tool",
-    "@sanity/dashboard",
-    "dashboard-widget-netlify"
+    "@sanity/dashboard"
   ],
   "env": {
     "development": {
@@ -28,10 +27,6 @@
     {
       "name": "part:@sanity/base/schema",
       "path": "./schemas/schema.js"
-    },
-    {
-      "implements": "part:@sanity/dashboard/config",
-      "path": "./src/dashboardConfig.js"
     }
   ]
 }
