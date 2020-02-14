@@ -4,31 +4,22 @@ import createSchema from 'part:@sanity/base/schema-creator'
 // Then import schema types from any plugins that might expose them
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 
+// Import my schemas
+import person from './person'
+import pitcher from './pitcher'
+import hitter from './hitter'
+import hitterSeason from './hitterSeason'
+
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
   // We name our schema
-  name: 'mySchema',
+  name: 'playerSchema',
   // Then proceed to concatenate our document type
   // to the ones provided by any plugins that are installed
   types: schemaTypes.concat([
-    {
-      title: "Player",
-      name: "player",
-      type: "document",
-      fields: [
-        {
-          title: "Name",
-          name: "name",
-          type: "string"
-        },
-        {
-          title: "Birth Date",
-          name: "birthdate",
-          type: "date"
-        }
-      ]
-    }
-    
-
+    person,
+    pitcher,
+    hitter,
+    hitterSeason
   ])
 })

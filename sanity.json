@@ -6,7 +6,17 @@
   },
   "api": {
     "projectId": "9rty98wh",
-    "dataset": "development"
+    "dataset": "testing"
+  },
+  "env": {
+    "development": {
+      "api": {
+        "dataset": "development"
+      },
+      "plugins": [
+        "@sanity/vision"
+      ]
+    }
   },
   "plugins": [
     "@sanity/base",
@@ -16,13 +26,6 @@
     "@sanity/desk-tool",
     "@sanity/dashboard"
   ],
-  "env": {
-    "development": {
-      "plugins": [
-        "@sanity/vision"
-      ]
-    }
-  },
   "parts": [
     {
       "name": "part:@sanity/base/schema",
