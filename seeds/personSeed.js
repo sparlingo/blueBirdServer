@@ -1,6 +1,7 @@
 const sanityClient = require('@sanity/client')
+const fetch = require('node-fetch')
 
-const PEOPLE_URL = 'http://127.0.0.1:4000/people'
+const UPDATE_PEOPLE_URL = 'http://127.0.0.1:4000/people'
 
 const client = sanityClient({
   projectId: '9rty98wh',
@@ -9,32 +10,84 @@ const client = sanityClient({
   useCdn: false
 })
 
-const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development  '
+const currentPeopleQuery = '*[_type == "person"]{_id, bbrefId}'
+//const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type == "person"]{_id, bbrefId}'
 
-fetch(PEOPLE_URL)
-  .then(res => res.json())
-  .then(people => people.map(transform))
-  .then(documents => {
+client.fetch(currentPeopleQuery).then(currentPeople => {
+  //console.log(currentPeople)
+  fetch(UPDATE_PEOPLE_URL)
+    .then(res => res.json())
+    //.then(people => people.map(transform))
+    .then(documents => {
+      
+      const subsetDocuments = documents.filter(doc => {
+        for(let person of currentPeople) {
+          return doc.playerID === person.bbrefId
+        }
+      })
+      // now I have the correct values from munenori that I want to put into sanity. I need to add the matching ID from the currentpeople
 
-    const peopleToWrite = documents.filter(doc =>
-      doc.bbrefId === 
-    )
+      let newPeople = []
+      
+      newPeople = subsetDocuments.forEach(doc => {
+        for(let person of currentPeople) {
+          if(doc.bbrefID === person.bbrefId) {
+            doc['_id'] = person._id
+            //console.log(doc)
+            return doc
+          }
+        }
+      })
+      console.log(newPeople)
+      // const transformPeople = (x) => {
+      //   return x.map(transform)
+      // }
+      // let subTransPeople = transformPeople(subsetPeople)
+      // //console.log(subTransPeople)
 
-    const matches = Promise.all(peopleToWrite.map(player => 
-      client.setIfMissing(player)
-    ))
-  })
+      // let transaction = client.transaction()
+
+      // subTransPeople.forEach(doc => {
+      //   transaction.createOrReplace(doc)
+      // })
+      // return transaction.commit()
+
+      // const allUpdatedPeople = Promise.all(updatePeople.map(doc => {
+      //   client.patch(currentPeople)
+      //   .setIfMissing(
+      //     {height: doc.height},
+      //     {weight: doc.weight},
+      //     {debut: doc.debut},
+      //     {finalGame: doc.finalGame}
+      //   ).commit()
+      //   .then(updatedPeople => {
+      //     console.log('hooray, something happened: ')
+      //     console.log(updatedPeople)
+      //   })
+      //   .catch(err => {
+      //     console.log('uh-oh, something went wrong: ', err.message)
+      //   })
+      // }))
+      //return allUpdatedPeople
+      function transform(externalPerson) {
+        return {
+          _id: externalPerson._id,
+          _type: 'person',
+          bbrefId: externalPerson.playerID,
+          height: externalPerson.height,
+          weight: externalPerson.weight,
+          debut: externalPerson.debut,
+          finalGame: externalPerson.finalGame
+        }
+      }
+    })
+})
+.catch(err => {
+  console.log('the fetch did not work', err.message)
+})
 
 
 
 
-function transform(externalPerson) {
-  return {
-    _type: 'person',
-    bbrefId: externalPerson.playerID,
-    height: externalPerson.height,
-    weight: externalPerson.weight,
-    debut: externalPerson.debut,
-    finalGame: externalPerson.finalGame
-  }
-}
+
+
