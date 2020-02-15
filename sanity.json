@@ -6,7 +6,7 @@
   },
   "api": {
     "projectId": "9rty98wh",
-    "dataset": "testing"
+    "dataset": "development"
   },
   "env": {
     "development": {
