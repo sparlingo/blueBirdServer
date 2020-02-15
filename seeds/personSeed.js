@@ -10,84 +10,51 @@ const client = sanityClient({
   useCdn: false
 })
 
-const currentPeopleQuery = '*[_type == "person"]{_id, bbrefId}'
+const currentPeopleQuery = '*[_type == "person"]{_id, bbrefId, name, slug}'
 //const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type == "person"]{_id, bbrefId}'
 
 client.fetch(currentPeopleQuery).then(currentPeople => {
   //console.log(currentPeople)
   fetch(UPDATE_PEOPLE_URL)
     .then(res => res.json())
-    //.then(people => people.map(transform))
     .then(documents => {
       
-      const subsetDocuments = documents.filter(doc => {
-        for(let person of currentPeople) {
-          return doc.playerID === person.bbrefId
-        }
-      })
-      // now I have the correct values from munenori that I want to put into sanity. I need to add the matching ID from the currentpeople
-
-      let newPeople = []
-      
-      newPeople = subsetDocuments.forEach(doc => {
+      let subsetDocuments = []
+      documents.map(doc => {
         for(let person of currentPeople) {
           if(doc.bbrefID === person.bbrefId) {
             doc['_id'] = person._id
-            //console.log(doc)
-            return doc
+            doc['name'] = person.name
+            doc['slug'] = person.slug
+            let newPerson = transform(doc)
+            console.log(newPerson)
+            return subsetDocuments.push(newPerson)
           }
         }
       })
-      console.log(newPeople)
-      // const transformPeople = (x) => {
-      //   return x.map(transform)
-      // }
-      // let subTransPeople = transformPeople(subsetPeople)
-      // //console.log(subTransPeople)
+   
+      let transaction = client.transaction()
+      subsetDocuments.forEach(doc => {
+        transaction.createOrReplace(doc)
+      })
 
-      // let transaction = client.transaction()
-
-      // subTransPeople.forEach(doc => {
-      //   transaction.createOrReplace(doc)
-      // })
-      // return transaction.commit()
-
-      // const allUpdatedPeople = Promise.all(updatePeople.map(doc => {
-      //   client.patch(currentPeople)
-      //   .setIfMissing(
-      //     {height: doc.height},
-      //     {weight: doc.weight},
-      //     {debut: doc.debut},
-      //     {finalGame: doc.finalGame}
-      //   ).commit()
-      //   .then(updatedPeople => {
-      //     console.log('hooray, something happened: ')
-      //     console.log(updatedPeople)
-      //   })
-      //   .catch(err => {
-      //     console.log('uh-oh, something went wrong: ', err.message)
-      //   })
-      // }))
-      //return allUpdatedPeople
       function transform(externalPerson) {
         return {
           _id: externalPerson._id,
           _type: 'person',
+          name: externalPerson.name,
           bbrefId: externalPerson.playerID,
+          slug: externalPerson.slug,
           height: externalPerson.height,
           weight: externalPerson.weight,
           debut: externalPerson.debut,
           finalGame: externalPerson.finalGame
         }
       }
+      return transaction.commit()
     })
+  return currentPeople
 })
 .catch(err => {
   console.log('the fetch did not work', err.message)
 })
-
-
-
-
-
-
