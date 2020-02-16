@@ -6,6 +6,7 @@ import schemaTypes from 'all:part:@sanity/base/schema-type'
 
 // Import my schemas
 import person from './person'
+import position from './position'
 import pitcher from './pitcher'
 import hitter from './hitter'
 import hitterSeason from './hitterSeason'
@@ -18,6 +19,7 @@ export default createSchema({
   // to the ones provided by any plugins that are installed
   types: schemaTypes.concat([
     person,
+    position,
     pitcher,
     hitter,
     hitterSeason

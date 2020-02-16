@@ -1,7 +1,7 @@
 export default {
   name: 'hitter',
   title: 'Hitter',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       title: 'Person',
@@ -22,13 +22,14 @@ export default {
     {
       title: 'Position',
       name: 'position',
-      type: 'text'
+      type: 'reference',
+      to: [{type: 'position'}]
     }
   ],
   preview: {
     select: {
       name: 'person.name',
-      position: 'position',
+      position: 'position.name',
       media: 'person.profile'
     },
     prepare(selection) {

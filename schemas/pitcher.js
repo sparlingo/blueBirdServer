@@ -19,6 +19,21 @@ export default {
       title: 'Starter?',
       name: 'startOrRelief',
       type: 'boolean'
+    },
+    {
+      title: 'Toronto IP',
+      name: 'torIP',
+      type: 'number'
+    },
+    {
+      title: 'Toronto ERA',
+      name: 'torERA',
+      type: 'number'
+    },
+    {
+      title: 'Toronto WAR',
+      name: 'torWAR',
+      type: 'number'
     }
   ],
   preview: {
