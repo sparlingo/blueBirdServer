@@ -23,7 +23,7 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
       documents.map(doc => {
         for(let person of currentPeople) {
           if(doc.bbrefID === person.bbrefId) {
-            doc['_id'] = person._id
+            //doc['_id'] = person._id
             doc['name'] = person.name
             doc['slug'] = person.slug
             let newPerson = transform(doc)
@@ -40,7 +40,8 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
 
       function transform(externalPerson) {
         return {
-          _id: externalPerson._id,
+          //_id: externalPerson._id,
+          _id: externalPerson.playerID,
           _type: 'person',
           name: externalPerson.name,
           bbrefId: externalPerson.playerID,
