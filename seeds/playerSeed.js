@@ -13,49 +13,52 @@ const currentPeopleQuery = '*[_type == "person"]{...}'
 client.fetch(currentPeopleQuery)
 .then(people => {
   //console.log(people)
-
+  
   people.map(person => {
+    let hitters = []
+    let pitchers = []
     //console.log(person)
-    let hitter = []
-    let pitcher = []
     axios.get(`http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part='${person.name}'`)
     .then(resp => {
       let data = resp.data.search_player_all.queryResults.row
       //console.log(data)
-      if (data.position === 'P') {
-        let player = {}
-        player['_id'] = person._id
-        player['person'] = {'_type': 'reference', '_ref': person._id }
-        player['hand'] = data.throws
-        pitcher.push(player)
-      } else {
-        let player = {}
-        player['_id'] = person._id
-        player['person'] = {'_type': 'reference', '_ref': person._id }
-        player['bats'] = data.bats
-        player['throws'] = data.throws
-        //player['position'] = data.position
-        hitter.push(player)
-      } // end of else
-    return pitcher, hitter
-    })
+      makePlayer(data)
+
+      function makePlayer(thing) {
+        if (thing.position === 'P') {
+          let pitcher = {}
+          pitcher['_id'] = person._id
+          pitcher['person'] = {'_type': 'reference', '_ref': person._id }
+          pitcher['hand'] = thing.throws
+          return pitchers.push(pitcher)
+        } else {
+          let hitter = {}
+          hitter['_id'] = person._id
+          hitter['person'] = {'_type': 'reference', '_ref': person._id }
+          hitter['bats'] = thing.bats
+          hitter['throws'] = thing.throws
+          //player['position'] = data.position
+          return hitters.push(hitter)
+        } // end of else
+      }
+    }) //end of axios .then
     .catch(err => {
       console.log(err)
     })
-    let transaction = client.transaction()
-    pitcher.forEach(doc => {
-      transaction.createOrReplace(doc)
-    })
-    hitter.forEach(doc => {
-      transaction.createOrReplace(doc)
-    })
-    return transaction.commit()
+    
+    //return transaction.commit()
   })
-  // collect all the player and pitcher objects here
-  // console.log(hitter)
-  // console.log(pitcher)
+    // let transaction = client.transaction()
+    // pitcher.forEach(doc => {
+    //   transaction.createOrReplace(doc)
+    // })
+    // hitter.forEach(doc => {
+    //   transaction.createOrReplace(doc)
+    // })
+
   // let transaction = client.transaction()
-return people
+  console.log(hitters)
+  return people
 })
 .catch(err => {
   console.log(err)
