@@ -10,14 +10,14 @@ export default {
       to: [{type: 'person'}]
     },
     {
-      title: 'Bats Left?',
-      name: 'batsLeft',
-      type: 'boolean'
+      title: 'Bats?',
+      name: 'bats',
+      type: 'text'
     },
     {
-      title: 'Throws Left?',
-      name: 'throwsLeft',
-      type: 'boolean'
+      title: 'Throws?',
+      name: 'throws',
+      type: 'text'
     },
     {
       title: 'Position',

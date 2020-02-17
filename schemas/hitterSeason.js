@@ -4,11 +4,16 @@ export default {
   title: "Hitter Season",
   fields: [
     {
-      title: "Player",
-      name: "playerId",
-      type: "reference",
-      to: [{type: 'hitter'}],
-      description: "Which player for what year?"
+      title: 'Person',
+      name: 'person',
+      type: 'reference',
+      to: [{type: 'person'}]
+    },
+    {
+      title: 'Hitter',
+      name: 'hitter',
+      type: 'reference',
+      to: [{type: 'hitter'}]
     },
     {
       title: "Year",

@@ -52,6 +52,6 @@ export default {
     }
   ],
   preview: {
-    select: {title: 'name', media: 'profile'}
+    select: {title: 'name', media: 'profile', subtitle: 'bbrefId'}
   },
 }
