@@ -33,7 +33,7 @@ client.fetch(currentHittersQuery)
       //console.log(career)
 
 
-      return hittersCareers.push(data)
+      return hittersCareers.push(career)
     })
     .catch(err => {
       console.log(err)

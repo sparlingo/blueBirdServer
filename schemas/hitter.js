@@ -22,8 +22,7 @@ export default {
     {
       title: 'Position',
       name: 'position',
-      type: 'reference',
-      to: [{type: 'position'}]
+      type: 'number'
     }
   ],
   preview: {

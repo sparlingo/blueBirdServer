@@ -1,7 +1,7 @@
 export default {
   name: 'position',
   title: 'Position',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       title: 'Position',
