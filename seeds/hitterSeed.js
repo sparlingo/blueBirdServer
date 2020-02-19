@@ -13,43 +13,52 @@ const client = sanityClient({
 const currentPeopleQuery = '*[_type == "person"]{_id, name}'
 
 client.fetch(currentPeopleQuery).then(allCurrentPeople => {
-  //console.log(currentPeople)
-  //console.log(typeof currentPeople)
+  //console.log(allCurrentPeople)
   return allCurrentPeople
 })
-// .then(people => {
-//   const names = []
-//   for(let person of people) {
-//     names.push(person.name)
-//   }
-//   return names
-// })
 .then(names => {
-  function transform(person, bbrefId) {
+  //console.log(names)
+  let documents = []
+  let transaction = client.transaction()
+
+  function transform(person, id) {
     return {
-      _id: `hitter-${bbrefId}`,
+      _id: `hitter-${id}`,
       _type: 'hitter',
-      person: {_type: 'reference', '_ref': bbrefId},
+      person: {_type: 'reference', '_ref': id},
       bats: person.bats,
       throws: person.throws,
       position: person.position
     }
   }
   
-  function getAllPeopleData(name, bbrefId) {
+  function getAllPeopleData(name, id) {
     axios.get(`http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part='${name}'`)
     .then((res) => {
-      if(res.data.search_player_all.queryResults.row.position !== 'P') {
-        let newPerson = transform(res.data.search_player_all.queryResults.row, bbrefId)
-        console.log(newPerson)
-        //I have the correctish values here
+      let data = res.data.search_player_all.queryResults.row
+      //console.log(data)
+      if(data.position !== 'P') {
+        var newHitter = transform(data, id)
+        //console.log(newHitter)
+        return documents.push(newHitter)
       }
-    }) 
+    })
+    .catch(error => {
+      console.log(error)
+    })
   }
-  for(let hitter of names) {
-    let result = getAllPeopleData(hitter.name, hitter._id)
-    //console.log(result)
-  }
+
+  names.forEach(hitter => {
+    let document = getAllPeopleData(hitter.name, hitter._id)
+    return document
+  })
+  
+  console.log(documents)
+  documents.forEach(doc => {
+    transaction.createOrReplace(doc)
+  })
+  return transaction.commit()
+
 })
 .catch(error => {
   console.log(error)

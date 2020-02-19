@@ -21,9 +21,8 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
       
       let subsetDocuments = []
       documents.map(doc => {
-        for(let person of currentPeople) {
+        for(let person of currentPeople) { //doc is coming from munenori, person from sanity
           if(doc.bbrefID === person.bbrefId) {
-            //doc['_id'] = person._id
             doc['name'] = person.name
             doc['slug'] = person.slug
             let newPerson = transform(doc)
@@ -40,8 +39,7 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
 
       function transform(externalPerson) {
         return {
-          //_id: externalPerson._id,
-          _id: externalPerson.playerID,
+          _id: externalPerson.playerID + '-' + externalPerson._id,
           _type: 'person',
           name: externalPerson.name,
           bbrefId: externalPerson.playerID,
