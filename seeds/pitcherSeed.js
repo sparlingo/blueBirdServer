@@ -12,13 +12,13 @@ const currentPeopleQuery = '*[_type == "person"]{...}'
 const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query='
 
 client.fetch(currentPeopleQuery).then(currentPeople => {
-  //console.log(currentPeople)
-  let pitchers = []
-  currentPeople.forEach(person => {
-    pitchers.push(person.name)
-    return pitchers
-  })
-  console.log(pitchers)
+  console.log(currentPeople)
+  // let pitchers = []
+  // currentPeople.forEach(person => {
+  //   pitchers.push(person.name)
+  //   return pitchers
+  // })
+  // console.log(pitchers)
 
   // for(let person of currentPeople) { //loops through each player
   //   axios.get(`http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part='${person.name}'`)

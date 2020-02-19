@@ -1,6 +1,6 @@
 export default {
-  name: 'hitter',
   title: 'Hitter',
+  name: 'hitter',
   type: 'document',
   fields: [
     {
@@ -22,7 +22,7 @@ export default {
     {
       title: 'Position',
       name: 'position',
-      type: 'number'
+      type: 'text'
     }
   ],
   preview: {

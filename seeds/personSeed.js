@@ -18,7 +18,7 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
   fetch(UPDATE_PEOPLE_URL)
     .then(res => res.json())
     .then(documents => {
-      
+
       let subsetDocuments = []
       documents.map(doc => {
         for(let person of currentPeople) { //doc is coming from munenori, person from sanity
@@ -26,7 +26,7 @@ client.fetch(currentPeopleQuery).then(currentPeople => {
             doc['name'] = person.name
             doc['slug'] = person.slug
             let newPerson = transform(doc)
-            console.log(newPerson)
+            //console.log(newPerson)
             return subsetDocuments.push(newPerson)
           }
         }
