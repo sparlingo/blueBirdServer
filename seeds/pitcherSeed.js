@@ -1,5 +1,5 @@
 const sanityClient = require('@sanity/client')
-const axios = require('axios')
+const fetch = require('node-fetch')
 
 const client = sanityClient({
   projectId: '9rty98wh',
@@ -9,45 +9,50 @@ const client = sanityClient({
 })
 
 const currentPeopleQuery = '*[_type == "person"]{...}'
-const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query='
+//const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query='
 
-client.fetch(currentPeopleQuery).then(currentPeople => {
-  console.log(currentPeople)
-  // let pitchers = []
-  // currentPeople.forEach(person => {
-  //   pitchers.push(person.name)
-  //   return pitchers
-  // })
-  // console.log(pitchers)
+const MLB_API_URL = 'http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%271977%27&end_season=%272018%27&team_id=%27141%27'
 
-  // for(let person of currentPeople) { //loops through each player
-  //   axios.get(`http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part='${person.name}'`)
-  //   .then(resp => {
-  //     let data = resp.data.search_player_all.queryResults.row
-  //     //console.log(data)
-  //     if (data.position === 'P') {
-  //       let pitcher = {}
-  //       pitcher['_id'] = person._id
-  //       pitcher['_type'] = 'pitcher'
-  //       pitcher['person'] = {'_type': 'reference', '_ref': person._id }
-  //       pitcher['hand'] = data.throws
-  //       //console.log(pitcher)
-  //       return pitchers.push(pitcher)
-  //     }
-  //   })
-  //   .catch(error => {
-  //     console.log(error)
-  //   })
-  // }
-  //console.log(documents)
-  // let transaction = client.transaction()
-  // pitchers.forEach(doc => {
-  //   transaction.createOrReplace(doc)
-  // })
-  // return transaction.commit()
-  return currentPeople
-
-}) //end of currentPeople fetch
-.catch(err => {
-  console.log(err)
+fetch(MLB_API_URL).then(res => res.json())
+.then(players => {
+  let data = players.roster_team_alltime.queryResults.row
+  return data
 })
+.then(allTimePlayers => {
+  
+  client.fetch(currentPeopleQuery).then(currentPeople => {
+    //console.log(currentPeople)
+    let allPitchers = []
+    currentPeople.forEach(person => {
+      for(let dude of allTimePlayers) { //dude is from mlb, person is from sanity
+        if(dude.name_first_last === person.name && dude.primary_position === 'P') {
+          //console.log(dude)
+          return allPitchers.push({
+            _id: person.bbrefId + '-' + dude.weight + dude.jersey_number + dude.player_id,
+            _type: 'pitcher',
+            person: {_type: 'reference', _ref: person._id},
+            hand: dude.throws
+          })
+        }
+      }
+    })
+    return allPitchers
+  })
+  .then(allPitchers => {
+    console.log(allPitchers)
+    let transaction = client.transaction()
+    allPitchers.forEach(doc => {
+      transaction.createOrReplace(doc)
+    })
+    //console.log(transaction)
+    //return transaction
+    return transaction.commit()
+  })
+  .catch(error => {
+    console.log(error)
+  })
+  return allTimePlayers
+})
+.catch(error => {
+  console.log(error)
+}) 

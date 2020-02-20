@@ -1,7 +1,5 @@
 const sanityClient = require('@sanity/client')
-const axios = require('axios')
-
-const MLB_API = "http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part=''"
+const fetch = require('node-fetch')
 
 const client = sanityClient({
   projectId: '9rty98wh',
@@ -10,60 +8,53 @@ const client = sanityClient({
   useCdn: false
 })
 
-const currentPeopleQuery = '*[_type == "person"]{_id, name}'
+const currentPeopleQuery = '*[_type == "person"]{...}'
+//const currentPeopleURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query='
 
-client.fetch(currentPeopleQuery).then(allCurrentPeople => {
-  //console.log(allCurrentPeople)
-  return allCurrentPeople
+const MLB_API_URL = 'http://lookup-service-prod.mlb.com/json/named.roster_team_alltime.bam?start_season=%271977%27&end_season=%272018%27&team_id=%27141%27'
+
+fetch(MLB_API_URL).then(res => res.json())
+.then(players => {
+  let data = players.roster_team_alltime.queryResults.row
+  return data
 })
-.then(names => {
-
-  let guid = () => {
-    let s4 = () => {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    //return id of format 'aaaaaaaa'-'aaaa'-'aaaa'-'aaaa'
-    return s4() + s4() + '-' + s4() + '-' + s4() + '-' + s4();
-  }
-
-  function transform(person, id, hitterID) {
-    return {
-      _id: `hitter-${hitterID}`,
-      _type: 'hitter',
-      person: {_type: 'reference', '_ref': id},
-      bats: person.bats,
-      throws: person.throws,
-      position: person.position
-    }
-  }
+.then(allTimePlayers => {
   
-  let transaction = client.transaction()
-
-  function getHitters(hitterNames) {
-    for(let person of hitterNames) {
-      axios.get(`http://lookup-service-prod.mlb.com/json/named.search_player_all.bam?sport_code='mlb'&name_part='${person.name}'`)
-      .then((res) => {
-        let data = res.data.search_player_all.queryResults.row
-        //console.log(data)
-        if(data.position !== 'P') {
-          let hitterID = guid()
-          let thing = transform(data, person._id, hitterID)
-          console.log(thing)
-          transaction.createIfNotExists(thing)
+  client.fetch(currentPeopleQuery).then(currentPeople => {
+    //console.log(currentPeople)
+    let allHitters = []
+    currentPeople.forEach(person => {
+      for(let dude of allTimePlayers) { //dude is from mlb, person is from sanity
+        if(dude.name_first_last === person.name && dude.primary_position !== 'P') {
+          //console.log(dude)
+          return allHitters.push({
+            _id: person.bbrefId + '-' + dude.weight + dude.height_feet + dude.jersey_number + dude.player_id,
+            _type: 'hitter',
+            person: {_type: 'reference', _ref: person._id},
+            throws: dude.throws,
+            bats: dude.bats,
+            position: dude.primary_position
+          })
         }
-      })
-      .catch(error => {
-        console.log(error)
-      })
-    }
-  }
-  getHitters(names)
-  return transaction.commit()
+      }
+    })
+    return allHitters
+  })
+  .then(allHitters => {
+    //console.log(allHitters)
+    let transaction = client.transaction()
+    allHitters.forEach(doc => {
+      transaction.createOrReplace(doc)
+    })
+    console.log(transaction)
+    //return transaction
+    return transaction.commit()
+  })
+  .catch(error => {
+    console.log(error)
+  })
+  return allTimePlayers
 })
 .catch(error => {
   console.log(error)
-})
-
-
+}) 

@@ -1,6 +1,6 @@
 export default {
   name: "hitterSeason",
-  type: "object",
+  type: "document",
   title: "Hitter Season",
   fields: [
     {
@@ -9,12 +9,12 @@ export default {
       type: 'reference',
       to: [{type: 'person'}]
     },
-    {
-      title: 'Hitter',
-      name: 'hitter',
-      type: 'reference',
-      to: [{type: 'hitter'}]
-    },
+    // {
+    //   title: 'Hitter',
+    //   name: 'hitter',
+    //   type: 'reference',
+    //   to: [{type: 'hitter'}]
+    // },
     {
       title: "Year",
       name: "year",
@@ -100,5 +100,18 @@ export default {
       name: "gidp",
       type: "number"
     }
-  ]
+  ],
+  preview: {
+    select: {
+      name: 'person.name',
+      subtitle: 'year'
+    },
+    prepare(selection) {
+      const {name, year} = selection
+      return {
+        title: name,
+        subtitle: year
+      }
+    }
+  }
 }

@@ -1,7 +1,7 @@
 export default {
   name: 'pitcher',
   title: 'Pitcher',
-  type: 'object',
+  type: 'document',
   fields: [
     {
       title: 'Person',

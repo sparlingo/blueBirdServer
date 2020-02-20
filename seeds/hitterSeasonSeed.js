@@ -1,5 +1,5 @@
 const sanityClient = require('@sanity/client')
-const axios = require('axios')
+const fetch = require('node-fetch')
 
 const client = sanityClient({
   projectId: '9rty98wh',
@@ -8,67 +8,60 @@ const client = sanityClient({
   useCdn: false
 })
 
-const HITTERS_URL = 'http://127.0.0.1:4000/hitter/'
-
+const HITTERS_URL = 'http://127.0.0.1:4000/hitters' //from munenori
 const currentHittersQuery = '*[_type == "hitter"]{..., person->}'
+const currentHittersQueryURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type%20==%20%22hitter%22]{...,%20person-%3E}'
 
-client.fetch(currentHittersQuery)
-.then(hitters => {
-  //console.log(hitters)
-  // build an array to get multiple axios requests, use person.bbrefId
-  let hittersCareers = [] 
-  for(let hitter of hitters) {
-    axios.get(HITTERS_URL + hitter.person.bbrefId)
-    .then(resp => {
-      let data = resp.data
-      let career = []
-      
-      // 
-      data.forEach(season => {
-        // right now I'm delgado, and I have to transform all his seasons
-        let playerSeason = transform(season)
-        //console.log(playerSeason)
-        return career.push(playerSeason)
-      })
-      //console.log(career)
-
-
-      return hittersCareers.push(career)
+fetch(HITTERS_URL).then(res => res.json())
+.then(allTimeHitters => {
+  //console.log(allTimeHitters)
+  client.fetch(currentHittersQuery).then(currentPeople => {
+    //console.log(currentPeople)
+    let allSeasons = []
+    currentPeople.forEach(hitter => {
+      for(let dude of allTimeHitters) { // dude is from munenori, hitter is from sanity
+        if(dude.playerID === hitter.person.bbrefId) {
+          allSeasons.push({
+            _id: dude.playerID + '-' + dude.stint + '-' + dude.yearID,
+            _type: 'hitterSeason',
+            //hitter: {_type: 'reference', _ref: hitter._id},
+            person: {_type: 'reference', _ref: hitter.person._id},
+            year: parseInt(dude.yearID),
+            games: dude.G,
+            atBats: dude.AB,
+            runs: dude.R,
+            hits: dude.H,
+            doubles: dude.doubles,
+            triples: dude.triples,
+            hr: dude.HR,
+            rbi: dude.RBI,
+            sb: dude.SB,
+            cs: dude.CS,
+            so: dude.SO,
+            ibb: dude.IBB,
+            hbp: dude.HBP,
+            sh: dude.SH,
+            sf: dude.SF,
+            gidp: dude.GIDP
+          })
+        }
+      }
     })
-    .catch(err => {
-      console.log(err)
+    //console.log(allSeasons)
+    return allSeasons
+  })
+  .then(allSeasons => {
+    let transaction = client.transaction()
+    allSeasons.forEach(doc => {
+      transaction.createOrReplace(doc)
     })
-  }
-  
-  function transform(season) {
-    return {
-      _id: season.playerID + '-' + season.yearID,
-      type: 'hitterSeason',
-      hitter: {_type: 'reference', _ref: season.bbrefId},
-      person: {_type: 'reference', _ref: season.bbrefId},
-      year: season.yearID,
-      games: season.G,
-      atBats: season.AB,
-      runs: season.R,
-      hits: season.H,
-      doubles: season.doubles,
-      triples: season.triples,
-      hr: season.HR,
-      rbi: season.RBI,
-      sb: season.SB,
-      cs: season.CS,
-      so: season.SO,
-      ibb: season.IBB,
-      hbp: season.HBP,
-      sh: season.SH,
-      sf: season.SF,
-      gidp: season.GIDP
-    }
-  }
-  return hittersCarers
+    console.log(transaction)
+    //return transaction
+    return transaction.commit()
+  })
 })
-.catch((err) => { // catch for the first query
-  console.log(err)
+.catch(error => {
+  console.log(error)
 })
 
 

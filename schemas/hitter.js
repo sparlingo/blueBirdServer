@@ -28,7 +28,7 @@ export default {
   preview: {
     select: {
       name: 'person.name',
-      position: 'position.name',
+      position: 'position',
       media: 'person.profile'
     },
     prepare(selection) {
