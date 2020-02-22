@@ -9,12 +9,12 @@ export default {
       type: 'reference',
       to: [{type: 'person'}]
     },
-    // {
-    //   title: 'Hitter',
-    //   name: 'hitter',
-    //   type: 'reference',
-    //   to: [{type: 'hitter'}]
-    // },
+    {
+      title: 'Hitter',
+      name: 'hitter',
+      type: 'reference',
+      to: [{type: 'hitter'}]
+    },
     {
       title: "Games",
       name: "games",

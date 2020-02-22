@@ -1,5 +1,6 @@
 const sanityClient = require('@sanity/client')
 const fetch = require('node-fetch')
+const axios = require('axios')
 
 const client = sanityClient({
   projectId: '9rty98wh',
@@ -8,77 +9,67 @@ const client = sanityClient({
   useCdn: false
 })
 
-const HITTER_URL = 'http://127.0.0.1:4000/hitter/' //from munenori
 const currentHittersQuery = '*[_type == "hitter"]{..., person->}'
 //const currentHittersQueryURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type%20==%20%22hitterSeason%22]{...,%20person-%3E}'
-
 client.fetch(currentHittersQuery).then(currentHitters => {
   //console.log(currentHitters)
   return currentHitters
 })
 .then(currentHitters => {
+  let allPlayers = []
   currentHitters.forEach(hitter => {
-    fetch(HITTER_URL + hitter.playerID).then(res => res.json())
-    .then(allHitterSeasons => {
-      let careerStats = []
-      allHitterSeasons.forEach(season => {
-        
+    
+    function getStats(query) {
+      let data = axios.get('http://127.0.0.1:4000/hitter/' + hitter.person.bbrefId)
+      return data
+    }
+    let career = getStats(hitter.person.bbrefId)
+    .then(response => {
+      let careerStats = {
+        _id: hitter.person.bbrefId + '-' + hitter.person.height + hitter.person.weight + hitter.bats + hitter.throws + hitter.position,
+        _type: 'hitterCareer',
+        hitter: {_type: 'reference', _ref: hitter._id},
+        person: {_type: 'reference', _ref: hitter.person._id},
+        games: 0,
+        atBats: 0,
+        runs: 0,
+        hits: 0,
+        doubles: 0,
+        triples: 0,
+        hr: 0,
+        rbi: 0,
+        sb: 0,
+        cs: 0,
+        so: 0,
+        ibb: 0,
+        hbp: 0,
+        sh: 0,
+        sf: 0,
+        gidp: 0
+      }
+      
+      response.data.forEach(season => {
+        careerStats['games'] += season.G
+        careerStats['atBats'] += season.AB
+        careerStats['runs'] += season.R
+        careerStats['hits'] += season.H
+        careerStats['doubles'] += season.doubles
+        careerStats['triples'] += season.triples
+        careerStats['hr'] += season.HR
+        careerStats['rbi'] += season.RBI
+        careerStats['sb'] += season.SB
+        careerStats['cs'] += season.CS
+        careerStats['so'] += season.SO
+        careerStats['ibb'] += season.IBB
+        careerStats['hbp'] += season.HBP 
+        careerStats['sh'] += season.SH
+        careerStats['sf'] += season.SF
+        careerStats['gidp'] += season.GIDP
       })
+      return careerStats
+      
     })
+    return career
   })
+  console.log(career)
 })
-
-// fetch(HITTERS_URL).then(res => res.json())
-// .then(allTimeHitters => {
-//   //console.log(allTimeHitters)
-//   client.fetch(currentHittersQuery).then(currentPeople => {
-//     //console.log(currentPeople)
-//     let allSeasons = []
-//     currentPeople.forEach(hitter => {
-//       let careerStats = [{
-//         _id: dude.playerID + '-' + 
-//       }]
-//       for(let dude of allTimeHitters) { // dude is from munenori, hitter is from sanity
-//         if(dude.playerID === hitter.person.bbrefId) {
-//           careerStats.push({
-//             _id: dude.playerID + '-' + dude.stint,
-//             _type: 'hitterSeason',
-//             //hitter: {_type: 'reference', _ref: hitter._id},
-//             person: {_type: 'reference', _ref: hitter.person._id},
-//             year: parseInt(dude.yearID),
-//             games: dude.G,
-//             atBats: dude.AB,
-//             runs: dude.R,
-//             hits: dude.H,
-//             doubles: dude.doubles,
-//             triples: dude.triples,
-//             hr: dude.HR,
-//             rbi: dude.RBI,
-//             sb: dude.SB,
-//             cs: dude.CS,
-//             so: dude.SO,
-//             ibb: dude.IBB,
-//             hbp: dude.HBP,
-//             sh: dude.SH,
-//             sf: dude.SF,
-//             gidp: dude.GIDP
-//           })
-//         }
-//       }
-//     })
-//     //console.log(allSeasons)
-//     return allSeasons
-//   })
-//   .then(allSeasons => {
-//     let transaction = client.transaction()
-//     allSeasons.forEach(doc => {
-//       transaction.createOrReplace(doc)
-//     })
-//     console.log(transaction)
-//     //return transaction
-//     return transaction.commit()
-//   })
-// })
-// .catch(error => {
-//   console.log(error)
-// })

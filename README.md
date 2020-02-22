@@ -42,7 +42,6 @@ I am not modeling every Blue Jay ever, I want only the best of the best.
 - Ernie Whitt, whitter01
 - Pat Borders, bordepa01
 
-
 ### First Basemen
 - Carlos Delgado, delgaca01
 - Justin Smoak, smoakju01
@@ -59,34 +58,33 @@ I am not modeling every Blue Jay ever, I want only the best of the best.
 - Josh Donaldson, donaljo02
 - Kelly Gruber, grubeke01
 - Rance Mulliniks, mullira01
-- 
 
 ### Shortstops
-- Tony Fernandez
-- Manuel Lee
-- Troy Tulowitzki
+- Tony Fernandez, fernato01
+- Manuel Lee, leema02
+- Troy Tulowitzki, tulowtr01
 
 ### Designiated Hitter
-- Edwin Encarnacion
-- Paul Molitor
+- Edwin Encarnacion, encared01
+- Paul Molitor, molitpa01
 
 ### Left Fielder
-- George Bell
-- Shannon Stewart?
+- George Bell, bellge02
+- Shannon Stewart?, stewash01
 - Melky Cabrera?
-- Jose Cruz Jr.
-- Raul Mondesi
+- Jose Cruz Jr., cruzjo02
+- Raul Mondesi, mondera01
 
 ### Center Fielder
-- Devon White
-- Kevin Pillar
-- Vernon Wells
-- Lloyd Moesby
-- Colby Rasmus
+- Devon White, whitede03
+- Kevin Pillar, pillake01
+- Vernon Wells, wellsve01
+- Lloyd Moseby, mosebll01
+- Colby Rasmus, rasmuco01
 
 ### Right Fielder
-- Joe Carter
-- Shawn Green
-- Alex Rios
-- Jose Bautista
-- Jesse Barfield
+- Joe Carter, cartejo01
+- Shawn Green, greensh01
+- Alex Rios, riosal01
+- Jose Bautista, bautijo02
+- Jesse Barfield, barfije01
