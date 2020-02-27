@@ -11,19 +11,15 @@ const client = sanityClient({
 const currentPitchersQuery = '*[_type == "pitcher"]{..., person->}'
 
 fetch('http://127.0.0.1:4000/pitchers/').then(res => res.json())
-.then(pitchers => {
-  //console.log(pitchers)
-  return pitchers
-})
 .then(seasons => {
   client.fetch(currentPitchersQuery).then(currentPitchers => {
     let allPitchers = []
-    //console.log(currentPitchers)
     currentPitchers.forEach(pitcher => { //from sanity, an existing pitcher
       for(let season of seasons) { //from munenori, every pitching season ever
+        //console.log(season)
         if (season.playerID === pitcher.person.bbrefId) {
           allPitchers.push({
-            _id: pitcher.person.bbrefId + '-' + pitcher.person.height + pitcher.hand + pitcher.person.weight,
+            _id: pitcher.person.bbrefId + '-' + pitcher.person.height + pitcher.hand + pitcher.person.weight + season.G + '-' + season.yearID,
             _type: 'pitcherSeason',
             pitcher: {_type: 'reference', _ref: pitcher._id},
             person: {_type: 'reference', _ref: pitcher.person._id},
@@ -66,7 +62,10 @@ fetch('http://127.0.0.1:4000/pitchers/').then(res => res.json())
     allPitchers.forEach(doc => {
       transaction.createOrReplace(doc)
     })
-    ///console.log(transaction)
+    console.log(transaction)
     return transaction.commit()
   })
+})
+.catch(error => {
+  console.log(error)
 })

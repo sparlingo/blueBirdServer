@@ -1,7 +1,7 @@
 export default {
-  name: "hitterSeason",
+  name: "hitterCareerStats",
   type: "document",
-  title: "Hitter Season",
+  title: "Hitter Career",
   fields: [
     {
       title: 'Person',
@@ -14,11 +14,6 @@ export default {
       name: 'hitter',
       type: 'reference',
       to: [{type: 'hitter'}]
-    },
-    {
-      title: "Year",
-      name: "year",
-      type: "number"
     },
     {
       title: "Games",

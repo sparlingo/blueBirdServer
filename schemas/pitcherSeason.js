@@ -147,14 +147,16 @@ export default {
     }
   ],
   preview: {
-    select: 'person.name',
-    subtitle: 'year'
-  },
-  prepare(selection) {
-    const {name, year} = selection
-    return {
-      title: name,
-      subtitle: year
+    select: {
+      title: 'person.name',
+      subtitle: 'year'
     }
-  }
+  },
+  // prepare(selection) {
+  //   const {name, year} = selection
+  //   return {
+  //     title: name,
+  //     subtitle: year
+  //   }
+  // }
 }

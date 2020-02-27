@@ -8,23 +8,19 @@ const client = sanityClient({
   useCdn: false
 })
 
-const HITTERS_URL = 'http://127.0.0.1:4000/hitters' //from munenori
 const currentHittersQuery = '*[_type == "hitter"]{..., person->}'
-const currentHittersQueryURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type%20==%20%22hitter%22]{...,%20person-%3E}'
 
-fetch(HITTERS_URL).then(res => res.json())
+fetch('http://127.0.0.1:4000/hitters/').then(res => res.json())
 .then(allTimeHitters => {
-  //console.log(allTimeHitters)
-  client.fetch(currentHittersQuery).then(currentPeople => {
-    //console.log(currentPeople)
+  client.fetch(currentHittersQuery).then(currentHitters => {
     let allSeasons = []
-    currentPeople.forEach(hitter => {
+    currentHitters.forEach(hitter => {
       for(let dude of allTimeHitters) { // dude is from munenori, hitter is from sanity
         if(dude.playerID === hitter.person.bbrefId) {
           allSeasons.push({
-            _id: dude.playerID + '-' + dude.stint + '-' + dude.yearID,
-            _type: 'hitterSeason',
-            //hitter: {_type: 'reference', _ref: hitter._id},
+            _id: dude.playerID + '-' + dude.stint + dude.G + dude.HBP + dude.atBats + dude.RBI + dude.SB + '-' + dude.yearID,
+            _type: 'hitterSeasonStats',
+            hitter: {_type: 'reference', _ref: hitter._id},
             person: {_type: 'reference', _ref: hitter.person._id},
             year: parseInt(dude.yearID),
             games: dude.G,
@@ -36,6 +32,7 @@ fetch(HITTERS_URL).then(res => res.json())
             hr: dude.HR,
             rbi: dude.RBI,
             sb: dude.SB,
+            bb: dude.BB,
             cs: dude.CS,
             so: dude.SO,
             ibb: dude.IBB,
@@ -53,7 +50,7 @@ fetch(HITTERS_URL).then(res => res.json())
   .then(allSeasons => {
     let transaction = client.transaction()
     allSeasons.forEach(doc => {
-      transaction.createOrReplace(doc)
+      transaction.createIfNotExists(doc)
     })
     console.log(transaction)
     //return transaction

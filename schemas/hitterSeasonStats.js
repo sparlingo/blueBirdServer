@@ -1,7 +1,7 @@
 export default {
-  name: "hitterCareer",
+  name: "hitterSeasonStats",
   type: "document",
-  title: "Hitter Career",
+  title: "Hitter Season",
   fields: [
     {
       title: 'Person',
@@ -14,6 +14,11 @@ export default {
       name: 'hitter',
       type: 'reference',
       to: [{type: 'hitter'}]
+    },
+    {
+      title: "Year",
+      name: "year",
+      type: "number"
     },
     {
       title: "Games",
@@ -98,15 +103,15 @@ export default {
   ],
   preview: {
     select: {
-      name: 'person.name',
+      title: 'person.name',
       subtitle: 'year'
     },
-    prepare(selection) {
-      const {name, year} = selection
-      return {
-        title: name,
-        subtitle: year
-      }
-    }
+    // prepare(selection) {
+    //   const {name, year} = selection
+    //   return {
+    //     title: name,
+    //     subtitle: year
+    //   }
+    // }
   }
 }
