@@ -1,5 +1,5 @@
 export default {
-  name: "pitcherSeason",
+  name: "pitcherSeasonStats",
   type: "document",
   title: "Pitcher Season",
   fields: [

@@ -20,7 +20,7 @@ fetch('http://127.0.0.1:4000/pitchers/').then(res => res.json())
         if (season.playerID === pitcher.person.bbrefId) {
           allPitchers.push({
             _id: pitcher.person.bbrefId + '-' + pitcher.person.height + pitcher.hand + pitcher.person.weight + season.G + '-' + season.yearID,
-            _type: 'pitcherSeason',
+            _type: 'pitcherSeasonStats',
             pitcher: {_type: 'reference', _ref: pitcher._id},
             person: {_type: 'reference', _ref: pitcher.person._id},
             year: parseInt(season.yearID),

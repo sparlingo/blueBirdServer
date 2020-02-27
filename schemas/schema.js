@@ -10,7 +10,7 @@ import position from './position'
 import pitcher from './pitcher'
 import hitter from './hitter'
 import hitterSeasonStats from './hitterSeasonStats'
-import pitcherSeason from './pitcherSeason'
+import pitcherSeasonStats from './pitcherSeasonStats'
 
 
 // Then we give our schema to the builder and provide the result to Sanity
@@ -25,6 +25,6 @@ export default createSchema({
     pitcher,
     hitter,
     hitterSeasonStats,
-    pitcherSeason
+    pitcherSeasonStats
   ])
 })
