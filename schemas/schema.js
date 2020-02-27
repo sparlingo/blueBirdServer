@@ -12,6 +12,7 @@ import hitter from './hitter'
 import hitterSeasonStats from './hitterSeasonStats'
 import pitcherSeason from './pitcherSeason'
 
+
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
   // We name our schema
