@@ -7,9 +7,10 @@ import schemaTypes from 'all:part:@sanity/base/schema-type'
 // Import my schemas
 import person from './person'
 import position from './position'
-import pitcher from './pitcher'
 import hitter from './hitter'
 import hitterSeasonStats from './hitterSeasonStats'
+import hitterCareerStats from './hitterCareerStats'
+import pitcher from './pitcher'
 import pitcherSeasonStats from './pitcherSeasonStats'
 
 
@@ -25,6 +26,7 @@ export default createSchema({
     pitcher,
     hitter,
     hitterSeasonStats,
+    hitterCareerStats,
     pitcherSeasonStats
   ])
 })

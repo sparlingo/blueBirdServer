@@ -1,5 +1,4 @@
 const sanityClient = require('@sanity/client')
-const axios = require('axios')
 const fetch = require('node-fetch')
 
 const client = sanityClient({
@@ -11,35 +10,49 @@ const client = sanityClient({
 
 const currentHittersQuery = '*[_type == "hitter"]{..., person->}'
 //const currentHittersQueryURL = 'https://9rty98wh.api.sanity.io/v1/data/query/development?query=*[_type%20==%20%22hitterSeason%22]{...,%20person-%3E}'
-client.fetch(currentHittersQuery).then(currentHitters => {
-  //console.log(currentHitters)
-  return currentHitters
-})
-.then(currentHitters => {
-  let transaction = client.transaction()
-  let allCareers = []
-  currentHitters.forEach(hitter => {
-
-    const getStats = async query => {
-      const response = await axios.get('http://127.0.0.1:4000/hitter/career/' + query)
-      //console.log(response.data)
-      return response.data
-    }
-
-    const makeTransaction = async hitter => {
-      let career = await getStats(hitter.person.bbrefId)
-      career['_id'] = career.playerID + '-' + career.AB + career.SO + career.SH + career.doubles + career.RBI
-      career['hitter'] = {'_type': 'reference', '_ref': hitter._id }
-      console.log(career)
-      return career
-    }
-    let career = makeTransaction(hitter)
-    //console.log(career)
-    return allCareers.push(career)
-  }) //end of forEach for hitters
-  allCareers.forEach(career => {
-    transaction.createOrReplace(career)
+fetch('http://127.0.0.1:4000/hitters/careers').then(res => res.json())
+.then(allTheHitters => {
+  client.fetch(currentHittersQuery).then(currentHitters => {
+    let allCareers = []
+    currentHitters.forEach(hitter => {
+      for(let dude of allTheHitters) {
+        if(dude.playerID === hitter.person.bbrefId) {
+          allCareers.push({
+            _id: dude.player + '-' + dude.CS + dude.AB + dude.GIDP + dude.SB + dude.HR,
+            _type: 'hitterCareerStats',
+            hitter: {_type: 'reference', _ref: hitter._id},
+            person: {_type: 'reference', _ref: hitter.person._id},
+            games: dude.G,
+            atBats: dude.AB,
+            runs: dude.R,
+            hits: dude.H,
+            doubles: dude.doubles,
+            triples: dude.triples,
+            hr: dude.HR,
+            rbi: dude.RBI,
+            sb: dude.SB,
+            cs: dude.CS,
+            bb: dude.BB,
+            so: dude.SO,
+            ibb: dude.IBB,
+            hbp: dude.HBP,
+            sh: dude.SH,
+            sf: dude.SF,
+            gidp: dude.GIDP
+          })
+        }
+      }
+    })
+    return allCareers
   })
-  console.log(transaction)
-  //return transaction.commit()
+  .then(allCareers => {
+    //console.log(allCareers)
+    let transaction = client.transaction()
+    allCareers.forEach(career => {
+      transaction.createOrReplace(career)
+    })
+    console.log(transaction)
+    transaction.commit()
+  })
 })
+
