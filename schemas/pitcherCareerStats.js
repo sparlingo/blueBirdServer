@@ -1,7 +1,7 @@
 export default {
-  name: "pitcherSeasonStats",
+  name: "pitcherCareerStats",
   type: "document",
-  title: "Pitcher Season",
+  title: "Pitcher Career",
   fields: [
     {
       title: 'Person',
@@ -147,11 +147,11 @@ export default {
       subtitle: 'year'
     }
   },
-  // prepare(selection) {
-  //   const {name, year} = selection
-  //   return {
-  //     title: name,
-  //     subtitle: year
-  //   }
-  // }
+  prepare(selection) {
+    const {name, year} = selection
+    return {
+      title: name,
+      subtitle: year
+    }
+  }
 }
