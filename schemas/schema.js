@@ -4,15 +4,20 @@ import createSchema from 'part:@sanity/base/schema-creator'
 // Then import schema types from any plugins that might expose them
 import schemaTypes from 'all:part:@sanity/base/schema-type'
 
-// Import my schemas
-import person from './person'
+// Import my schemas, baseball related ones
 import hitter from './hitter'
 import hitterSeasonStats from './hitterSeasonStats'
 import hitterCareerStats from './hitterCareerStats'
+import person from './person'
 import pitcher from './pitcher'
 import pitcherSeasonStats from './pitcherSeasonStats'
 import pitcherCareerStats from './pitcherCareerStats'
 
+// Import blog shchemas
+import blockContent from './blockContent'
+import category from './category'
+import post from './post'
+import author from './author'
 
 // Then we give our schema to the builder and provide the result to Sanity
 export default createSchema({
@@ -27,6 +32,10 @@ export default createSchema({
     hitterSeasonStats,
     hitterCareerStats,
     pitcherSeasonStats,
-    pitcherCareerStats
+    pitcherCareerStats,
+    post,
+    author,
+    category,
+    blockContent
   ])
 })
