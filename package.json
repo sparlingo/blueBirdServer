@@ -23,7 +23,7 @@
     "@sanity/default-login": "^1.149.18",
     "@sanity/desk-tool": "^1.149.19",
     "@sanity/vision": "^1.149.16",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "elliptic": "^6.5.3",
     "global": "^4.4.0",
     "lodash": "^4.17.19",
